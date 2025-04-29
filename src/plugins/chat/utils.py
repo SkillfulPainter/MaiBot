@@ -334,7 +334,13 @@ def process_llm_response(text: str) -> List[str]:
     cleaned_text = pattern.sub("", text)
     logger.debug(f"{text}去除括号处理后的文本: {cleaned_text}")
     """
-    cleaned_text = text
+    pattern = r'''
+            \([^()]*[\u4e00-\u9fff]+[^()]*\)   # 匹配圆括号内的中文字符
+            |\[[^][]*[\u4e00-\u9fff]+[^][]*\]  # 匹配方括号内的中文字符
+            |\{[^{}]*[\u4e00-\u9fff]+[^{}]*\}  # 匹配花括号内的中文字符
+        '''
+    cleaned_text = re.sub(pattern, '', text, flags=re.VERBOSE)
+    #cleaned_text = text
     # 对清理后的文本进行进一步处理
     max_length = global_config.response_max_length * 2
     max_sentence_num = global_config.response_max_sentence_num
